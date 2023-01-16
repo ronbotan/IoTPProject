@@ -1,15 +1,12 @@
 # pip install cmake dlib==19.22
-# pip install camera
 # pip install face_recognition
 # pip install python-ffmpeg-video-streaming
 
 #This code is the push the openCV Webcam to Flask Web Server
 
-from recognition import FaceRecognition
 import cv2
 from flask import Flask, Response, render_template
 
-fr = FaceRecognition
 app = Flask(__name__)
 cam = cv2.VideoCapture(0)
 
@@ -36,8 +33,4 @@ def gen_frames():
 #Start flask server
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000')
-    """
-    fr = FaceRecognition()
-    fr.run_recognition()
-    """
     
