@@ -1,7 +1,10 @@
+from recognition import FaceRecognition
 import cv2
 from flask import Flask, Response, render_template
-app = Flask(__name__)
 
+fr = FaceRecognition
+
+app = Flask(__name__)
 cam = cv2.VideoCapture(0)
 
 @app.route('/')
