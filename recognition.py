@@ -24,7 +24,8 @@ class FaceRecognition:
         print(self.known_face_names)
 
     def run_recognition(self):
-        video_capture = cv2.VideoCapture(0)
+        #video_capture = cv2.VideoCapture(0)
+        video_capture = cv2.VideoCapture("http://192.168.1.123:5000/video_feed")
 
         if not video_capture.isOpened():
             sys.exit('Video source not found...')
