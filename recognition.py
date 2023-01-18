@@ -25,7 +25,7 @@ class FaceRecognition:
 
     def run_recognition(self):
         #video_capture = cv2.VideoCapture(0)
-        video_capture = cv2.VideoCapture("http://192.168.1.123:5000/video_feed")
+        video_capture = cv2.VideoCapture("http://172.23.24.166:5000/video_feed")
 
         if not video_capture.isOpened():
             sys.exit('Video source not found...')
@@ -87,3 +87,7 @@ class FaceRecognition:
         # Release handle to the webcam
         video_capture.release()
         cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    fr = FaceRecognition()
+    fr.run_recognition()
