@@ -1,14 +1,15 @@
 import numpy as np
-import cv2
-import pickle
+import cv2, pickle
 
-face_cascade = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_alt2.xml')
+face_cascade = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_alt2.xml') #OpenCV Face cascade
+
 #cap = cv2.VideoCapture(0) #Use webcam
 cap = cv2.VideoCapture("http://172.23.24.166:5000/video_feed") #Insert flask video stream IP 
-recognizer = cv2.face.LBPHFaceRecognizer_Create()
-recognizer.read("trained.yml")
 
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+recognizer.read("trained.yml") #Trained data file
 labels = {"person_name": 1}
+
 with open("labels.pickle", 'rb') as f:
     labels = pickle.load(f) #Load labels
     labels = {v:k for k,v in labels.items} #Inverting of labels to get the proper name structure

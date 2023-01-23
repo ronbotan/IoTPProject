@@ -1,30 +1,49 @@
 import cv2
+import os
+import time
 
-face_cascade = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_alt2.xml')
+Path = os.path.dirname(os.path.abspath(__file__))
+imgPath = os.path.join(Path, "Trainfaces")
+cameraBrightness = 190
+moduleval = 10  # SAVE EVERY ITH FRAME TO AVOID REPETITION
+minBlur = 500  # SMALLER VALUE MEANS MORE BLURRINESS PRESENT
+grayImage = False  # IMAGES SAVED COLORED OR GRAY
+saveData = True  # SAVE DATA FLAG
+showImage = True  # IMAGE DISPLAY FLAG
+imgwidth = 250
+imgHeight = 250
+count = 0
+
+
 cap = cv2.VideoCapture(0)
+cap.set(3, 640)
+cap.set(4, 480)
+cap.set(10, cameraBrightness)
 
-while(1):
-    ret, frame = cap.read()
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray,scaleFactor=1.5,minNeighbors=5)
-    for(x,y,w,h) in faces:
-        print(x,y,w,h)
-        roi_gray = gray[y:y+h,x:x+w] #(ycord_start, ycord_end)
-        roi_color = frame[y:y+h,x:x+w]
+def saveDataFunc():
+    global countFolder
+    countFolder = 0
+    while os.path.exists(imgPath + str(countFolder)):
+        countFolder = countFolder + 1
+    os.makedirs(imgPath + str(countFolder))
 
-        img_item = "my-image.png"
-        cv2.imwrite(img_item, roi_color)
-        
-        #Draw box
-        color = (0,0,255) #Image is in BGR
-        stroke = 2
-        end_x = x + w
-        end_y = y + h
-        cv2.rectangle(frame, (x,y), (end_x, end_y), color, stroke)
+while True:
+    success, img = cap.read()
+    img = cv2.resize(img, (imgwidth, imgHeight))
+    if grayImage:img = cv2.cvtColor (img, cv2.COLOR_BGR2GRAY)
+    if saveData:
+        blur = cv2.Laplacian(img, cv2.CV_64F).var()
+        if count % moduleval == 0 and blur > minBlur:
+            countSave = count
+            currentTime = time.time()
+            cv2.imwrite(imgPath + str(countFolder) + "/" + str(countSave)+"_"+ str(int (blur))+"_"+str(currentTime)+".png", img)
+            countSave = countSave + 1
+        count += 1
 
-    #showImage
-    cv2.imshow('frame',frame)
-    if cv2.waitKey(20) & 0xFF == ord('q'):
+    if showImage:
+        cv2.imshow("Image", img)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cap.release()

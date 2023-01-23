@@ -7,8 +7,7 @@ import pickle
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 image_dir = os.path.join(BASE_DIR, "Trainfaces")
 face_cascade = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_alt2.xml') #Select xml based on which one provides better accuracy
-recognizer = cv2.face.LBPHFaceRecognizer_Create()
-recognizer.read("trained.yml")
+recognizer = cv2.face.LBPHFaceRecognizer()
 
 current_id = 0
 label_ids = {}
@@ -31,18 +30,16 @@ for root, dirs, files in os.walk(image_dir):
 
 
             pil_image = Image.open(path).convert("L") #Convert to Grayscale
-            size = (550,550)
-            final_image = pil_image.resize(size,Image.ANTIALIAS) #Resize image to get a better accuracy in model
             image_array = np.array(pil_image, "uint8") #Convert grayscale image to numpy array, required for training of model
-            faces = face_cascade.detectMultiScale(image_array, scaleFactor=1.5, minNeighbors=5) #Detect face in image
+            faces = face_cascade.detectMultiScale(image_array, scaleFactor=1.5, minNeighbors=5) #Detect face in image, increase neighbors for harder detection
 
             for (x,y,w,h) in faces:
                 roi = image_array[y:y+h, x:x+w]
                 x_train.append(roi)
                 y_labels.append(id_)
 
-print(y_labels)
-print(x_train)
+#print(y_labels)
+#print(x_train)
 
 with open("labels.pickle", 'wb') as f:
     pickle.dump(label_ids, f)
