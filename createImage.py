@@ -27,10 +27,13 @@ def saveDataFunc():
         countFolder = countFolder + 1
     os.makedirs(imgPath + str(countFolder))
 
+if saveData:saveDataFunc()    
+
 while True:
     success, img = cap.read()
     img = cv2.resize(img, (imgwidth, imgHeight))
     if grayImage:img = cv2.cvtColor (img, cv2.COLOR_BGR2GRAY)
+    
     if saveData:
         blur = cv2.Laplacian(img, cv2.CV_64F).var()
         if count % moduleval == 0 and blur > minBlur:

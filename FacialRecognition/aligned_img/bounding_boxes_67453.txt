@@ -1,0 +1,10 @@
+./aligned_img\Gal Gadot\1.png 63 31 157 166
+./aligned_img\Gal Gadot\2.png 83 25 118 70
+./aligned_img\Gal Gadot\3.png 112 29 164 99
+./aligned_img\Gal Gadot\4.png 56 17 122 119
+./aligned_img\Ron\1.png 143 98 300 311
+./aligned_img\Ron\IMG-20230123-WA0006.png 356 540 879 1263
+./aligned_img\Ron\IMG-20230123-WA0007.png 133 649 692 1417
+./aligned_img\Ron\IMG-20230123-WA0008.png 348 587 922 1391
+./aligned_img\Ron\IMG-20230123-WA0009.png 386 738 907 1418
+./aligned_img\Ron\IMG-20230123-WA0010.png 497 674 1027 1418
