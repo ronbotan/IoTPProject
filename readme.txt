@@ -15,6 +15,8 @@ pip install --upgrade tensorflow-gpu
 3. Run face
 
 
-Tensorflow > OpenCV (No Time)
+Tensorflow > OpenCV
+OpenCV uses haar cascades, frontal face focused. Tensorflow provides a better overall accuracy
+https://github.com/glennford49/Facenet_Tensorflow
 
 HoughLines() function by OpenCV (Detects physical lines)
