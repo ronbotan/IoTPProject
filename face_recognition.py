@@ -11,7 +11,8 @@ import pickle
 from PIL import Image
 import tensorflow.compat.v1 as tf
 
-video = "testvideo.mp4" #http://192.168.1.86:5000/video_feed
+video = "/videos/testvideo.mp4" 
+#video = "http://192.168.1.86:5000/video_feed"
 modeldir = './model/facenet.pb'
 classifier_filename = './class/classifier.pkl'
 npy='./npy'

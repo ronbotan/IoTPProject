@@ -186,10 +186,8 @@ def run():
 				# add the bounding box coordinates to the rectangles list
 				rects.append((startX, startY, endX, endY))
 
-		# draw a horizontal line in the center of the frame -- once an
-		# object crosses this line we will determine whether they were
-		# moving 'up' or 'down'
-		cv2.line(frame, (0, H // 2), (W, H // 2), (0, 0, 0), 3)
+		# draw a horizontal line in the center of the frame -- once an object crosses this line we will determine whether they were moving 'up' or 'down'
+		cv2.line(frame, (10, 0), (10, H), (0, 0, 255), 3) #cv2.line(image,start,end,color,thickness)
 		cv2.putText(frame, "-Entrance-", (10, H - ((i * 20) + 200)),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
@@ -210,27 +208,21 @@ def run():
 			# otherwise, there is a trackable object so we can utilize it
 			# to determine direction
 			else:
-				# the difference between the y-coordinate of the *current*
-				# centroid and the mean of *previous* centroids will tell
-				# us in which direction the object is moving (negative for
-				# 'up' and positive for 'down')
+				# the difference between the y-coordinate of the *current* centroid and the mean of *previous* centroids will tell 
+				# us in which direction the object is moving (negative for 'up' and positive for 'down')
 				y = [c[1] for c in to.centroids]
 				direction = centroid[1] - np.mean(y)
 				to.centroids.append(centroid)
 
 				# check to see if the object has been counted or not
 				if not to.counted:
-					# if the direction is negative (indicating the object
-					# is moving up) AND the centroid is above the center
-					# line, count the object
+					# if the direction is negative (indicating the object is moving up) AND the centroid is above the center line, count the object
 					if direction < 0 and centroid[1] < H // 2:
 						totalUp += 1
 						empty.append(totalUp)
 						to.counted = True
 
-					# if the direction is positive (indicating the object
-					# is moving down) AND the centroid is below the
-					# center line, count the object
+					# if the direction is positive (indicating the object is moving down) AND the centroid is below the center line, count the object
 					elif direction > 0 and centroid[1] > H // 2:
 						totalDown += 1
 						empty1.append(totalDown)
@@ -269,7 +261,7 @@ def run():
 		]
 
 		info2 = [
-		("Total people inside", x),
+		("Occupancy", x),
 		]
 
                 # Display the output
