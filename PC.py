@@ -12,7 +12,7 @@ from itertools import zip_longest
 
 model = "mobilenet_ssd/MobileNetSSD_deploy.caffemodel"
 prototxt = "mobilenet_ssd/MobileNetSSD_deploy.prototxt"
-defaultvid = "videos/example_01.mp4"
+defaultvid = "videos/linecross.mp4"
 #defaultvid = "http://192.168.1.86:5000/video_feed"
 
 #python main.py --prototxt mobilenet_ssd/MobileNetSSD_deploy.prototxt --model mobilenet_ssd/MobileNetSSD_deploy.caffemodel --input videos/example_01.mp4
@@ -60,8 +60,7 @@ def run():
 	W = None
 	H = None
 
-	# instantiate our centroid tracker, then initialize a list to store
-	# each of our dlib correlation trackers, followed by a dictionary to
+	# instantiate our centroid tracker, then initialize a list to store each of our dlib correlation trackers, followed by a dictionary to
 	# map each unique object ID to a TrackableObject
 	ct = CentroidTracker(maxDisappeared=40, maxDistance=50)
 	trackers = []
@@ -94,8 +93,7 @@ def run():
 		if args["input"] is not None and frame is None:
 			break
 
-		# resize the frame to have a maximum width of 500 pixels (the
-		# less data we have, the faster we can process it), then convert
+		# resize the frame to have a maximum width of 500 pixels (the less data we have, the faster we can process it), then convert
 		# the frame from BGR to RGB for dlib
 		frame = imutils.resize(frame, width = 500)
 		rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -104,8 +102,7 @@ def run():
 		if W is None or H is None:
 			(H, W) = frame.shape[:2]
 
-		# if we are supposed to be writing a video to disk, initialize
-		# the writer
+		# if we are supposed to be writing a video to disk, initialize the writer
 		if args["output"] is not None and writer is None:
 			fourcc = cv2.VideoWriter_fourcc(*"MJPG")
 			writer = cv2.VideoWriter(args["output"], fourcc, 30,
@@ -117,27 +114,23 @@ def run():
 		status = "Waiting"
 		rects = []
 
-		# check to see if we should run a more computationally expensive
-		# object detection method to aid our tracker
+		# check to see if we should run a more computationally expensive object detection method to aid our tracker
 		if totalFrames % args["skip_frames"] == 0:
 			# set the status and initialize our new set of object trackers
 			status = "Detecting"
 			trackers = []
 
-			# convert the frame to a blob and pass the blob through the
-			# network and obtain the detections
+			# convert the frame to a blob and pass the blob through the network and obtain the detections
 			blob = cv2.dnn.blobFromImage(frame, 0.007843, (W, H), 127.5)
 			net.setInput(blob)
 			detections = net.forward()
 
 			# loop over the detections
 			for i in np.arange(0, detections.shape[2]):
-				# extract the confidence (i.e., probability) associated
-				# with the prediction
+				# extract the confidence (i.e., probability) associated with the prediction
 				confidence = detections[0, 0, i, 2]
 
-				# filter out weak detections by requiring a minimum
-				# confidence
+				# filter out weak detections by requiring a minimum confidence
 				if confidence > args["confidence"]:
 					# extract the index of the class label from the
 					# detections list
@@ -147,21 +140,17 @@ def run():
 					if CLASSES[idx] != "person":
 						continue
 
-					# compute the (x, y)-coordinates of the bounding box
-					# for the object
+					# compute the (x, y)-coordinates of the bounding box for the object
 					box = detections[0, 0, i, 3:7] * np.array([W, H, W, H])
 					(startX, startY, endX, endY) = box.astype("int")
 
 
-					# construct a dlib rectangle object from the bounding
-					# box coordinates and then start the dlib correlation
-					# tracker
+					# construct a dlib rectangle object from the bounding box coordinates and then start the dlib correlation tracker
 					tracker = dlib.correlation_tracker()
 					rect = dlib.rectangle(startX, startY, endX, endY)
 					tracker.start_track(rgb, rect)
 
-					# add the tracker to our list of trackers so we can
-					# utilize it during skip frames
+					# add the tracker to our list of trackers so we can utilize it during skip frames
 					trackers.append(tracker)
 
 		# otherwise, we should utilize our object *trackers* rather than
@@ -169,8 +158,7 @@ def run():
 		else:
 			# loop over the trackers
 			for tracker in trackers:
-				# set the status of our system to be 'tracking' rather
-				# than 'waiting' or 'detecting'
+				# set the status of our system to be 'tracking' rather than 'waiting' or 'detecting'
 				status = "Tracking"
 
 				# update the tracker and grab the updated position
@@ -186,30 +174,25 @@ def run():
 				# add the bounding box coordinates to the rectangles list
 				rects.append((startX, startY, endX, endY))
 
-		# draw a horizontal line in the center of the frame -- once an object crosses this line we will determine whether they were moving 'up' or 'down'
-		cv2.line(frame, (10, 0), (10, H), (0, 0, 255), 3) #cv2.line(image,start,end,color,thickness)
-		cv2.putText(frame, "-Entrance-", (10, H - ((i * 20) + 200)),
-			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+		#Line to cross, once an object crosses this line we will determine whether they were moving 'up' or 'down'
+		cv2.line(frame, (30, 0), (30, H), (0, 0, 255), 3) #cv2.line(image,start,end,color,thickness)
+		cv2.putText(frame, "Entrance", (35, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-		# use the centroid tracker to associate the (1) old object
-		# centroids with (2) the newly computed object centroids
+		# use the centroid tracker to associate the (1) old object centroids with (2) the newly computed object centroids
 		objects = ct.update(rects)
 
 		# loop over the tracked objects
 		for (objectID, centroid) in objects.items():
-			# check to see if a trackable object exists for the current
-			# object ID
+			# check to see if a trackable object exists for the current object ID
 			to = trackableObjects.get(objectID, None)
 
 			# if there is no existing trackable object, create one
 			if to is None:
 				to = TrackableObject(objectID, centroid)
 
-			# otherwise, there is a trackable object so we can utilize it
-			# to determine direction
+			# otherwise, there is a trackable object so we can utilize it to determine direction
 			else:
-				# the difference between the y-coordinate of the *current* centroid and the mean of *previous* centroids will tell 
-				# us in which direction the object is moving (negative for 'up' and positive for 'down')
+				# the difference between the y-coordinate of the *current* centroid and the mean of *previous* centroids will tell us in which direction the object is moving (negative for 'up' and positive for 'down')
 				y = [c[1] for c in to.centroids]
 				direction = centroid[1] - np.mean(y)
 				to.centroids.append(centroid)
@@ -230,8 +213,7 @@ def run():
 						x = []
 						# compute the sum of total people inside
 						x.append(len(empty1)-len(empty))
-						#print("Total people inside:", x)
-						# if the people limit exceeds over threshold, send an email alert
+						#print("Total people inside:", x) if the people limit exceeds over threshold, send an email alert
 						if sum(x) >= config.Threshold:
 							cv2.putText(frame, "-ALERT: People limit exceeded-", (10, frame.shape[0] - 80),
 								cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255), 2)
@@ -249,9 +231,9 @@ def run():
 			# draw both the ID of the object and the centroid of the
 			# object on the output frame
 			text = "ID {}".format(objectID)
-			cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
+			cv2.putText(frame, text, (centroid[1] - 10, centroid[1] - 10),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-			cv2.circle(frame, (centroid[0], centroid[1]), 4, (255, 255, 255), -1)
+			cv2.circle(frame, (centroid[1], centroid[1]), 4, (255, 255, 255), -1)
 
 		# construct a tuple of information we will be displaying on the
 		info = [
