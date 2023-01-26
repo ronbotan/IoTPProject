@@ -12,7 +12,7 @@ from itertools import zip_longest
 
 model = "mobilenet_ssd/MobileNetSSD_deploy.caffemodel"
 prototxt = "mobilenet_ssd/MobileNetSSD_deploy.prototxt"
-defaultvid = "videos/linecross.mp4"
+defaultvid = "videos/horizontal.mp4"
 #defaultvid = "http://192.168.1.86:5000/video_feed"
 
 #python main.py --prototxt mobilenet_ssd/MobileNetSSD_deploy.prototxt --model mobilenet_ssd/MobileNetSSD_deploy.caffemodel --input videos/example_01.mp4
@@ -101,6 +101,7 @@ def run():
 		# if the frame dimensions are empty, set them
 		if W is None or H is None:
 			(H, W) = frame.shape[:2]
+			print (W, H)
 
 		# if we are supposed to be writing a video to disk, initialize the writer
 		if args["output"] is not None and writer is None:
@@ -193,20 +194,20 @@ def run():
 			# otherwise, there is a trackable object so we can utilize it to determine direction
 			else:
 				# the difference between the y-coordinate of the *current* centroid and the mean of *previous* centroids will tell us in which direction the object is moving (negative for 'up' and positive for 'down')
-				y = [c[1] for c in to.centroids]
-				direction = centroid[1] - np.mean(y)
+				y = [c[0] for c in to.centroids]
+				direction = centroid[0] - np.mean(y)
 				to.centroids.append(centroid)
 
 				# check to see if the object has been counted or not
 				if not to.counted:
 					# if the direction is negative (indicating the object is moving up) AND the centroid is above the center line, count the object
-					if direction < 0 and centroid[1] < H // 2:
+					if direction < 0 and centroid[0] < 30:
 						totalUp += 1
 						empty.append(totalUp)
 						to.counted = True
 
 					# if the direction is positive (indicating the object is moving down) AND the centroid is below the center line, count the object
-					elif direction > 0 and centroid[1] > H // 2:
+					elif direction > 0 and centroid[0] > 30:
 						totalDown += 1
 						empty1.append(totalDown)
 						#print(empty1[-1])
@@ -215,7 +216,7 @@ def run():
 						x.append(len(empty1)-len(empty))
 						#print("Total people inside:", x) if the people limit exceeds over threshold, send an email alert
 						if sum(x) >= config.Threshold:
-							cv2.putText(frame, "-ALERT: People limit exceeded-", (10, frame.shape[0] - 80),
+							cv2.putText(frame, "Occupancy limit exceeded", (10, frame.shape[0] - 80),
 								cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255), 2)
 							if config.ALERT:
 								print("[INFO] Sending email alert..")
@@ -231,9 +232,9 @@ def run():
 			# draw both the ID of the object and the centroid of the
 			# object on the output frame
 			text = "ID {}".format(objectID)
-			cv2.putText(frame, text, (centroid[1] - 10, centroid[1] - 10),
+			cv2.putText(frame, text, (centroid[0] - 10, centroid[0] - 10),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-			cv2.circle(frame, (centroid[1], centroid[1]), 4, (255, 255, 255), -1)
+			cv2.circle(frame, (centroid[0], centroid[0]), 4, (255, 255, 255), -1)
 
 		# construct a tuple of information we will be displaying on the
 		info = [
@@ -268,7 +269,7 @@ def run():
 
 
 		# show the output frame
-		cv2.imshow("Real-Time Monitoring/Analysis Window", frame)
+		cv2.imshow("Real-Time Monitoring Window", frame)
 		key = cv2.waitKey(1) & 0xFF
 
 		# if the `q` key was pressed, break from the loop
