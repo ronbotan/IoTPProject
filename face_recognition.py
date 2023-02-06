@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-import cv2
+import cv2, sys, time, threading
 import numpy as np
 import facenet
 import detect_face
@@ -9,10 +9,43 @@ import os
 import time
 import pickle
 from PIL import Image
+import paho.mqtt.client as mqttclient
 import tensorflow.compat.v1 as tf
 
-video = "./videos/testvideo.mp4" 
-#video = "http://192.168.1.86:5000/video_feed"
+global iCount
+iCount = 0
+
+global Holder
+Holder = 0
+
+def set_interval(func, sec):
+    def func_wrapper():
+        set_interval(func, sec)
+        func()
+    t = threading.Timer(sec, func_wrapper)
+    t.start()
+    return t
+
+def clearHolder():
+    Holder = 1
+
+def publish():
+    client = mqttclient.Client()
+
+    if client.connect("192.168.9.2", 1883, 60) != 0: #connect(broker,port,timeout)
+        print("cant connect")
+        sys.exit(-1)
+    else:
+        print("connected")
+
+    client.publish("iotp_reception/intruder", "Intruder detected at the receptionist counter", 0)
+    print('Published')
+    iCount = 0
+
+set_interval(clearHolder(), 100000)
+
+#video = 0 
+video = "http://192.168.9.92:5000/video_feed"
 modeldir = './model/facenet.pb'
 classifier_filename = './class/classifier.pkl'
 npy='./npy'
@@ -90,12 +123,21 @@ with tf.Graph().as_default():
                                     cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 255,0), -1)
                                     cv2.putText(frame, result_names, (xmin,ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL,
                                                 1, (0, 0, 0), thickness=1, lineType=1)
+                                    iCount = 0
                                     
                         else :
                             cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 0, 255), 2)
                             cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 0,255), -1)
                             cv2.putText(frame, "?", (xmin,ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL,
                                                 1, (0, 0, 0), thickness=1, lineType=1)
+                            if iCount < 5:
+                                iCount = iCount + 1 #Counter increment based on face
+                                time.sleep(1)
+
+                            if iCount >= 5:
+                                if(Holder == 0):
+                                    publish()
+
                     except:   
                         print("error")
             
