@@ -38,8 +38,8 @@ def sendMongo(currentCount):
 
 countHolder = 0
 count = 0
-video = "videos/testvideo.mp4"
-#video = "http://192.168.9.2:5000/video_feed"
+#video = "0"
+video = "http://192.168.9.2:5000/video_feed"
 modeldir = './model/facenet.pb'
 classifier_filename = './class/classifier.pkl'
 npy='./npy'

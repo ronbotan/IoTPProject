@@ -32,7 +32,7 @@ while True:
     
     if saveData:
         blur = cv2.Laplacian(img, cv2.CV_64F).var()
-        if count % moduleval == 0 and blur > minBlur:
+        if count % moduleval == 0:
             countSave = count
             currentTime = time.time()
             cv2.imwrite(imgPath + str(countFolder) + "/" + str(countSave)+"_"+ str(int(blur))+"_"+str(currentTime)+".png", img)

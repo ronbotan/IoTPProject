@@ -37,15 +37,12 @@ def publish():
         sys.exit(-1)
     else:
         print("connected")
-
-    client.publish("iotp_reception/intruder", "Intruder detected at the receptionist counter", 0)
+        
+    client.publish("iotp_reception/intruder", "1", 0)
     print('Published')
-    iCount = 0
 
-set_interval(clearHolder(), 1000)
-
-video = 0
-#video = "http://192.168.9.92:5000/video_feed"
+#video = 0
+video = "http://192.168.9.92:5000/video_feed"
 modeldir = './model/facenet.pb'
 classifier_filename = './class/classifier.pkl'
 npy='./npy'
@@ -114,7 +111,7 @@ with tf.Graph().as_default():
                         predictions = model.predict_proba(emb_array)
                         best_class_indices = np.argmax(predictions, axis=1)
                         best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
-                        if best_class_probabilities>0.80:
+                        if best_class_probabilities>0.90:
                             cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)    #boxing face
                             for H_i in HumanNames:
                                 if HumanNames[best_class_indices[0]] == H_i:
@@ -130,13 +127,14 @@ with tf.Graph().as_default():
                             cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 0,255), -1)
                             cv2.putText(frame, "?", (xmin,ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL,
                                                 1, (0, 0, 0), thickness=1, lineType=1)
-                            if iCount < 5:
+                            if iCount < 3:
                                 iCount = iCount + 1 #Counter increment based on face
                                 time.sleep(1)
 
-                            if iCount >= 5:
-                                if(Holder == 0):
+                            if iCount >= 3:
+                                if(iCount == 3):
                                     publish()
+                                    iCount = iCount+1
 
                     except:   
                         print("error")
