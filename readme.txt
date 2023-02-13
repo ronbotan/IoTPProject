@@ -11,12 +11,8 @@ pip install --upgrade scikit-learn
 pip install --upgrade tensorflow-gpu
 
 1. Run createImage to create images to be used for facetrain
-2. Run facetrain to create a data model that will be used for facial recognition
-3. Run face
-
-
-Tensorflow > OpenCV
-OpenCV uses haar cascades, frontal face focused. Tensorflow provides a better overall accuracy
-https://github.com/glennford49/Facenet_Tensorflow
-
-HoughLines() function by OpenCV (Detects physical lines)
+2. Rename the created folder to the name of the user
+3. Run the data_preprocess code to process the images for the faces in the frame
+4. Run facetrain to create a data model that will be used for facial recognition
+5. Run face_recognise to do the facial recognition
+6. Run count to do the people counting based on faces in the frame
