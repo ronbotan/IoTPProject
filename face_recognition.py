@@ -42,10 +42,10 @@ def publish():
     print('Published')
     iCount = 0
 
-set_interval(clearHolder(), 100000)
+set_interval(clearHolder(), 1000)
 
-#video = 0 
-video = "http://192.168.9.92:5000/video_feed"
+video = 0
+#video = "http://192.168.9.92:5000/video_feed"
 modeldir = './model/facenet.pb'
 classifier_filename = './class/classifier.pkl'
 npy='./npy'

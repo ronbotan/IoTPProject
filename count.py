@@ -38,8 +38,8 @@ def sendMongo(currentCount):
 
 countHolder = 0
 count = 0
-#video = 0 
-video = "http://192.168.9.2:5000/video_feed"
+video = "videos/testvideo.mp4"
+#video = "http://192.168.9.2:5000/video_feed"
 modeldir = './model/facenet.pb'
 classifier_filename = './class/classifier.pkl'
 npy='./npy'
@@ -117,12 +117,12 @@ with tf.Graph().as_default():
                                 if HumanNames[best_class_indices[0]] == H_i:
                                     result_names = HumanNames[best_class_indices[0]]
                                     #print("Predictions : [ name: {} , accuracy: {:.3f} ]".format(HumanNames[best_class_indices[0]],best_class_probabilities[0]))
-                                    cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 255,0), -1)
-                                    cv2.putText(frame, result_names, (xmin,ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)
+                                    #cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 255,0), -1)
+                                    #cv2.putText(frame, result_names, (xmin,ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)
                                     
                         else :
-                            cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 0, 255), 2)
-                            cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 0,255), -1)
+                            #cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 0, 255), 2)
+                            #cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 0,255), -1)
                             #cv2.putText(frame, "Unknown", (xmin,ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)
                             count = count + 1
                     except:   

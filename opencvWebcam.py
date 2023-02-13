@@ -2,7 +2,7 @@ import cv2
 from flask import Flask, Response, render_template
 
 app = Flask(__name__)
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture("videos/testvideo.mp4")
 
 @app.route('/')
 def index():
